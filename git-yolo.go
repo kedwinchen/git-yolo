@@ -6,7 +6,7 @@ import (
 	"os/exec"
 	"time"
 
-	"github.com/fsnotify/fsnotify"
+	"github.com/radovskyb/watcher"
 )
 
 func getMessages() []string {
@@ -35,38 +35,23 @@ func GitYolo(messageList *[]string, r *rand.Rand) {
 }
 
 func runWatcher(messageList *[]string, r *rand.Rand) {
-	watcher, err := fsnotify.NewWatcher()
-	if err != nil {
-		log.Fatal(err)
-	}
+	watcher := watcher.New()
 	defer watcher.Close()
 
-	done := make(chan bool)
 	go func() {
 		for {
 			select {
-			case event, ok := <-watcher.Events:
-				if !ok {
-					return
-				}
+			case event := <-watcher.Event:
 				log.Println("event:", event)
-				if event.Op&fsnotify.Write == fsnotify.Write {
-					log.Println("modified file:", event.Name)
-				}
-			case err, ok := <-watcher.Errors:
-				if !ok {
-					return
-				}
+				log.Println(pickMessage(messageList, r))
+			case err := <-watcher.Error:
 				log.Println("error:", err)
 			}
 		}
 	}()
 
-	err = watcher.Add(".")
-	if err != nil {
-		log.Fatal(err)
-	}
-	<-done
+	watcher.AddRecursive(".")
+	watcher.Ignore(".git")
 }
 
 func main() {
