@@ -111,7 +111,8 @@ func GitYolo(messageList *[]string, r *rand.Rand) {
 	// add gitignore ignored files
 	gitAdd := exec.Command("git", "add", ".", "--force")
 	// commit with random messag
-	gitCommit := exec.Command("git", "commit", "-m", pickMessage(messageList, r))
+	theMessage := pickMessage(messageList, r)
+	gitCommit := exec.Command("git", "commit", "-m", theMessage)
 	// force push to master. what could possibly go wrong?
 	gitPush := exec.Command("git", "push", "--force", "origin", "master")
 
