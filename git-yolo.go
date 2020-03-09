@@ -21,6 +21,13 @@ func logErrror(err error) {
 	}
 }
 
+func ePrint(err error, msg string) {
+	logErrror(err)
+	if err != nil {
+		log.Println(fmt.Sprintf("ERROR: %s (%s)", err, msg))
+	}
+}
+
 func exitFail(msg string) {
 	// currently a wrapper, may change functionality later
 	log.Fatalln(msg)
@@ -94,9 +101,8 @@ func pickMessage(messageList *[]string, r *rand.Rand) string {
 }
 
 func runCmd(cmd *exec.Cmd) {
-	err := cmd.Run()
-	cmd.CombinedOutput
-	logErrror(err)
+	output, err := cmd.CombinedOutput()
+	ePrint(err, string(output))
 }
 
 func GitYolo(messageList *[]string, r *rand.Rand) {
