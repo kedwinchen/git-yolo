@@ -118,7 +118,8 @@ func runWatcher(messageList *[]string, r *rand.Rand) {
 	go func() {
 		for {
 			select {
-			case _ = <-theWatcher.Event:
+			case event := <-theWatcher.Event:
+				log.Println(event)
 				GitYolo(messageList, r)
 			case err := <-theWatcher.Error:
 				log.Println("error:", err)
