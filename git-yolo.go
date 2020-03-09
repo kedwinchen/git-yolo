@@ -99,8 +99,11 @@ func runCmd(cmd *exec.Cmd) {
 }
 
 func GitYolo(messageList *[]string, r *rand.Rand) {
-	gitAdd := exec.Command("git", "add", ".", "-f")
+	// add gitignore ignored files
+	gitAdd := exec.Command("git", "add", ".", "--force")
+	// commit with random messag
 	gitCommit := exec.Command("git", "commit", "-m", pickMessage(messageList, r))
+	// force push to master. what could possibly go wrong?
 	gitPush := exec.Command("git", "push", "--force", "origin", "master")
 
 	runCmd(gitAdd)
@@ -115,9 +118,8 @@ func runWatcher(messageList *[]string, r *rand.Rand) {
 	go func() {
 		for {
 			select {
-			case event := <-theWatcher.Event:
-				log.Println("event:", event)
-				log.Println(pickMessage(messageList, r))
+			case _ = <-theWatcher.Event:
+				GitYolo(messageList, r)
 			case err := <-theWatcher.Error:
 				log.Println("error:", err)
 			}
