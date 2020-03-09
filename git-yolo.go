@@ -1,16 +1,92 @@
 package main
 
 import (
+	"bufio"
+	"fmt"
 	"log"
 	"math/rand"
+	"os"
 	"os/exec"
+	"path/filepath"
+	"strings"
 	"time"
 
+	"github.com/mitchellh/go-homedir"
 	"github.com/radovskyb/watcher"
 )
 
+func logErrror(err error) {
+	if err != nil {
+		log.Println(err)
+	}
+}
+
+func exitFail(msg string) {
+	// currently a wrapper, may change functionality later
+	log.Fatalln(msg)
+}
+
+func exitOnError(err error, msg string) {
+	logErrror(err)
+	exitFail(msg)
+}
+
+func readFile(filepath string) []string {
+	fileLines := []string{}
+
+	file, err := os.Open(filepath)
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		fileLines = append(fileLines, scanner.Text())
+	}
+
+	if err := scanner.Err(); err != nil {
+		log.Fatal(err)
+	}
+
+	return fileLines
+}
+
 func getMessages() []string {
-	return []string{"stuff"}
+	messageList := []string{}
+	msgFileList := []string{}
+
+	yoloDir, err := homedir.Dir()
+	logErrror(err)
+	yoloDir = filepath.Join(yoloDir, ".gityolo")
+
+	pathInfo, err := os.Stat(yoloDir)
+	// exitOnError(err, fmt.Sprintf("FATAL: Directory %s does not exist!", yoloDir))
+	if !os.FileMode.IsDir(pathInfo.Mode()) {
+		exitFail(fmt.Sprintf("FATAL: Expected %s to be a directory", yoloDir))
+	}
+	// get a list of all text files in yoloDir
+	err = filepath.Walk(yoloDir,
+		func(path string, info os.FileInfo, err error) error {
+			if err == nil {
+				if strings.HasSuffix(path, ".txt") {
+					pathInfo, err = os.Stat(path)
+					if os.FileMode.IsRegular(pathInfo.Mode()) {
+						msgFileList = append(msgFileList, path)
+					}
+				}
+			}
+			return err
+		})
+	logErrror(err)
+	for _, theFile := range msgFileList {
+		theContents := readFile(theFile)
+		for _, theLine := range theContents {
+			messageList = append(messageList, theLine)
+		}
+	}
+
+	return messageList
 }
 
 func pickMessage(messageList *[]string, r *rand.Rand) string {
@@ -19,9 +95,7 @@ func pickMessage(messageList *[]string, r *rand.Rand) string {
 
 func runCmd(cmd *exec.Cmd) {
 	err := cmd.Run()
-	if err != nil {
-		log.Println(err)
-	}
+	logErrror(err)
 }
 
 func GitYolo(messageList *[]string, r *rand.Rand) {
@@ -35,23 +109,26 @@ func GitYolo(messageList *[]string, r *rand.Rand) {
 }
 
 func runWatcher(messageList *[]string, r *rand.Rand) {
-	watcher := watcher.New()
-	defer watcher.Close()
+	theWatcher := watcher.New()
+	defer theWatcher.Close()
 
 	go func() {
 		for {
 			select {
-			case event := <-watcher.Event:
+			case event := <-theWatcher.Event:
 				log.Println("event:", event)
 				log.Println(pickMessage(messageList, r))
-			case err := <-watcher.Error:
+			case err := <-theWatcher.Error:
 				log.Println("error:", err)
 			}
 		}
 	}()
 
-	watcher.AddRecursive(".")
-	watcher.Ignore(".git")
+	theWatcher.AddRecursive(".")
+	theWatcher.Ignore(".git")
+	if err := theWatcher.Start(time.Millisecond); err != nil {
+		log.Fatalln(err)
+	}
 }
 
 func main() {
