@@ -25,7 +25,7 @@ func ePrint(err error, msg string) {
 	logErrror(err)
 	if err != nil {
 		log.Println("ERROR START >>> ")
-		log.Println(fmt.Sprintf("ERROR: (%s)", err, msg))
+		log.Println(fmt.Sprintf("ERROR: (%s)", msg))
 		log.Println("ERROR END <<<")
 	}
 }
