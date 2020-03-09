@@ -102,9 +102,10 @@ func pickMessage(messageList *[]string, r *rand.Rand) string {
 	return (*messageList)[r.Intn(len(*messageList))]
 }
 
-func runCmd(cmd *exec.Cmd) {
+func runCmd(cmd *exec.Cmd) error {
 	output, err := cmd.CombinedOutput()
 	ePrint(err, string(output))
+	return err
 }
 
 func GitYolo(messageList *[]string, r *rand.Rand) {
