@@ -15,8 +15,9 @@ import (
 	"github.com/radovskyb/watcher"
 )
 
-func logErrror(err error) {
+func logErrror(err error, msg string) {
 	if err != nil {
+		log.Println(msg)
 		log.Println(err)
 	}
 }
@@ -95,6 +96,7 @@ func pickMessage(messageList *[]string, r *rand.Rand) string {
 
 func runCmd(cmd *exec.Cmd) {
 	err := cmd.Run()
+	cmd.CombinedOutput
 	logErrror(err)
 }
 
