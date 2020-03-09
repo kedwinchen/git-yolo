@@ -119,7 +119,7 @@ func GitYolo(messageList *[]string, r *rand.Rand) {
 
 	runCmd(gitAdd)
 	runCmd(gitCommit)
-	if err = runCmd(gitPushForce); err != nil {
+	if err := runCmd(gitPushForce); err != nil {
 		runCmd(gitPush)
 	}
 }
