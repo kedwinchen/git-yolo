@@ -15,3 +15,6 @@ Also, it gave me a reason to write a project in Go.
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+
+I am not responsible for any consequences that may result from using this software,
+professional or otherwise.
