@@ -15,9 +15,8 @@ import (
 	"github.com/radovskyb/watcher"
 )
 
-func logErrror(err error, msg string) {
+func logErrror(err error) {
 	if err != nil {
-		log.Println(msg)
 		log.Println(err)
 	}
 }
