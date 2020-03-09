@@ -113,8 +113,8 @@ func GitYolo(messageList *[]string, r *rand.Rand) {
 	// commit with random messag
 	gitCommit := exec.Command("git", "commit", "-m", pickMessage(messageList, r))
 	// force push to master. what could possibly go wrong?
-	// gitPush := exec.Command("git", "push", "--force", "origin", "master")
-	gitPush := exec.Command("git", "push")
+	gitPush := exec.Command("git", "push", "--force", "origin", "master")
+	// gitPush := exec.Command("git", "push")
 
 	runCmd(gitAdd)
 	runCmd(gitCommit)
