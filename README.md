@@ -2,7 +2,7 @@
 
 You only live once.
 
-As they say, commit often.
+As they say, commit often, perfect later (I feel like I'm missing a part of the phrase. Oh well, it's probably nothing)...
 
 ## Why
 
