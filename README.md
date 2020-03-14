@@ -16,6 +16,7 @@ As they say, commit often, perfect later (I feel like I'm missing a part of the 
 ## Usage
 
 In any git directory, run `git yolo`
+This starts `git-yolo` as a daemon-like process (currently, at time of writing, it blocks)
 
 ## Why
 
