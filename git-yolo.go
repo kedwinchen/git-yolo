@@ -113,15 +113,14 @@ func GitYolo(messageList *[]string, r *rand.Rand) {
 	gitAdd := exec.Command("git", "add", ".", "--force")
 	// commit with random messag
 	gitCommit := exec.Command("git", "commit", "-m", pickMessage(messageList, r))
-	// force push to master. what could possibly go wrong?
+	// (force) push to master. what could possibly go wrong?
 	gitPushForce := exec.Command("git", "push", "--force", "origin", "master")
 	gitPush := exec.Command("git", "push", "--force")
 
 	runCmd(gitAdd)
 	runCmd(gitCommit)
-	if err := runCmd(gitPushForce); err != nil {
-		runCmd(gitPush)
-	}
+	runCmd(gitPushForce)
+	runCmd(gitPush)
 }
 
 func runWatcher(messageList *[]string, r *rand.Rand) {
