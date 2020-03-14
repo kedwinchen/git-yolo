@@ -21,6 +21,15 @@ func logErrror(err error) {
 	}
 }
 
+func ePrint(err error, msg string) {
+	logErrror(err)
+	if err != nil {
+		log.Println("ERROR START >>> ")
+		log.Println(fmt.Sprintf("%s", msg))
+		log.Println("ERROR END <<<")
+	}
+}
+
 func exitFail(msg string) {
 	// currently a wrapper, may change functionality later
 	log.Fatalln(msg)
@@ -93,18 +102,24 @@ func pickMessage(messageList *[]string, r *rand.Rand) string {
 	return (*messageList)[r.Intn(len(*messageList))]
 }
 
-func runCmd(cmd *exec.Cmd) {
-	err := cmd.Run()
-	logErrror(err)
+func runCmd(cmd *exec.Cmd) error {
+	output, err := cmd.CombinedOutput()
+	ePrint(err, string(output))
+	return err
 }
 
 func GitYolo(messageList *[]string, r *rand.Rand) {
-	gitAdd := exec.Command("git", "add", ".", "-f")
+	// add gitignore ignored files
+	gitAdd := exec.Command("git", "add", ".", "--force")
+	// commit with random messag
 	gitCommit := exec.Command("git", "commit", "-m", pickMessage(messageList, r))
-	gitPush := exec.Command("git", "push", "--force", "origin", "master")
+	// (force) push to master. what could possibly go wrong?
+	gitPushForce := exec.Command("git", "push", "--force", "origin", "master")
+	gitPush := exec.Command("git", "push", "--force")
 
 	runCmd(gitAdd)
 	runCmd(gitCommit)
+	runCmd(gitPushForce)
 	runCmd(gitPush)
 }
 
@@ -116,8 +131,8 @@ func runWatcher(messageList *[]string, r *rand.Rand) {
 		for {
 			select {
 			case event := <-theWatcher.Event:
-				log.Println("event:", event)
-				log.Println(pickMessage(messageList, r))
+				log.Println(event)
+				GitYolo(messageList, r)
 			case err := <-theWatcher.Error:
 				log.Println("error:", err)
 			}
