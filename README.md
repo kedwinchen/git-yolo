@@ -13,6 +13,10 @@ As they say, commit often, perfect later (I feel like I'm missing a part of the 
 3. Add the resulting `git-yolo` binary to your path
 4. Add an alias for `git yolo` in your [global] `.gitconfig`
 
+## Usage
+
+In any git directory, run `git yolo`
+
 ## Why
 
 Why not?
