@@ -4,6 +4,15 @@ You only live once.
 
 As they say, commit often, perfect later (I feel like I'm missing a part of the phrase. Oh well, it's probably nothing)...
 
+## Installation
+
+(if the install script is not available yet)
+
+1. Download the source code (or download the binary and skip to step 3)
+2. Compile using `go build git-yolo.go`
+3. Add the resulting `git-yolo` binary to your path
+4. Add an alias for `git yolo` in your [global] `.gitconfig`
+
 ## Why
 
 Why not?
