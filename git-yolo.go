@@ -1,3 +1,10 @@
+// FILE:	git-yolo.go
+// PROJECT:	git-yolo
+// ORIGINATOR:	CHEN, Kedwin
+// EMAIL:	(redacted)
+// DESCRIPTION:	A fun/joke project I wrote to learn* Go[lang]
+//		Will mess up your git repository log
+
 package main
 
 import (
@@ -14,7 +21,7 @@ import (
 	"time"
 
 	"github.com/mitchellh/go-homedir"
-	"github.com/pborman/getopt"
+	"github.com/pborman/getopt/v2"
 	"github.com/radovskyb/watcher"
 )
 
@@ -161,11 +168,11 @@ func runWatcher(messageList *[]string, r *rand.Rand, respectIgnore *bool, safeMo
 }
 
 func main() {
-	optHelp := getopt.BoolLong("help", 'h', "", "Print this message and exit")
-	optSafe := getopt.BoolLong("safe", 's', "", "Safe Mode: no force push and respect `.gitignore`")
-	optRespect := getopt.BoolLong("respect", 'r', "", "Respect the `.gitignore` file")
-	optWatcher := getopt.BoolLong("watcher", 'w', "", "Watch the directory for changes, blocks STDIN ")
-	optDaemon := getopt.BoolLong("daemon", 'd', "", "Watch the directory for changes, runs in background (does not block STDIN)")
+	optHelp := getopt.BoolLong("help", 'h', "Print this message and exit")
+	optSafe := getopt.BoolLong("safe", 's', "Safe Mode: no force push and respect `.gitignore`")
+	optRespect := getopt.BoolLong("respect", 'r', "Respect the `.gitignore` file")
+	optWatcher := getopt.BoolLong("watch", 'w', "Watch the directory for changes, blocks STDIN. Mutually exclusive with --daemon")
+	optDaemon := getopt.BoolLong("daemon", 'd', "Watch the directory for changes, runs in background (does not block STDIN). Mutually exclusive with --watcher")
 
 	getopt.Parse()
 	if *optHelp {
@@ -175,6 +182,10 @@ func main() {
 
 	messageList := getMessages()
 	r := rand.New(rand.NewSource(time.Now().Unix()))
+
+	if *optDaemon && *optWatcher {
+		exitFail("FATAL: --daemon and --watch are mutually exclusive")
+	}
 
 	if *optDaemon {
 		watchArgv := []string{}
